@@ -1,20 +1,25 @@
-# -*- coding: utf-8 -*-
-import redis
-import os
-import telebot
-# import some_api_lib
-# import ...
+from telegram import InlineQueryResultArticle, InputTextMessageContent
+from telegram.ext import Updater, CommandHandler, InlineQueryHandler
+import logging
+from uuid import uuid4
+logging.basicConfig(filename='logfile.txt',format='%(asctime)s - %(name)s - %(message)s', level=logging.INFO)
 
-# Example of your code beginning
-#           Config vars
-token = os.environ['TELEGRAM_TOKEN']
-some_api_token = os.environ['SOME_API_TOKEN']
-#             ...
+updater = Updater('502983532:AAHeA0_Iq3HcYoAqEpHhLo1HtTEGjzBFubE')
 
-# If you use redis, install this add-on https://elements.heroku.com/addons/heroku-redis
-r = redis.from_url(os.environ.get("REDIS_URL"))
+def start_method(bot, update):
+    bot.sendMessage(update.message.chat_id, "Robot Started")
 
-#       Your bot code below
-# bot = telebot.TeleBot(token)
-# some_api = some_api_lib.connect(some_api_token)
-#              ...
+def inlinequery(bot, update):
+    query = update.inline_query.query
+    results = list()
+    results.append(InlineQueryResultArticle(id = uuid4(), title="Uppercase", input_message_content=InputTextMessageContent(query.upper())))
+    results.append(InlineQueryResultArticle(id = uuid4(), title="Lowercase", input_message_content=InputTextMessageContent(query.lower())))
+    bot.answerInlineQuery(update.inline_query.id, results=results)
+
+start_command = CommandHandler('start', start_method)
+updater.dispatcher.add_handler(start_command)
+updater.dispatcher.add_handler(InlineQueryHandler(inlinequery))
+updater.start_polling()
+
+# for exit
+updater.idle()
