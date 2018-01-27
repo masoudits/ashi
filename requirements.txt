@@ -1,9 +1,0 @@
-# List of required packages (Dependencies)
-
-
-# If you need to specify a version
-requests==2.16.5
-
-# Or you need not a pip package, @'...' specifies git branch
-
-# Or you have .zip library
